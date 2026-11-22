@@ -1,0 +1,16 @@
+<routes>
+    <vType id="car" accel="2.6" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="13.89"/>
+
+    <route id="r_NS" edges="N2C C2S"/>
+    <route id="r_SN" edges="S2C C2N"/>
+    <route id="r_EW" edges="E2C C2W"/>
+    <route id="r_WE" edges="W2C C2E"/>
+
+    <!-- Corredor Norte-Sur: eje de alta congestion (hora pico) -->
+    <flow id="f_NS" type="car" route="r_NS" begin="0" end="3600" vehsPerHour="700"/>
+    <flow id="f_SN" type="car" route="r_SN" begin="0" end="3600" vehsPerHour="650"/>
+
+    <!-- Eje Este-Oeste: demanda moderada -->
+    <flow id="f_EW" type="car" route="r_EW" begin="0" end="3600" vehsPerHour="300"/>
+    <flow id="f_WE" type="car" route="r_WE" begin="0" end="3600" vehsPerHour="300"/>
+</routes>

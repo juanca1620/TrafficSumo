@@ -1,0 +1,11 @@
+{
+  "extraPaths": [
+    ".",
+    "controller",
+    "analysis",
+    "tools",
+    "C:/Program Files (x86)/Eclipse/Sumo/tools"
+  ],
+  "reportMissingImports": "none",
+  "reportMissingModuleSource": "none"
+}

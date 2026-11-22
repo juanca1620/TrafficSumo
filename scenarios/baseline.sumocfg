@@ -1,0 +1,14 @@
+<configuration>
+    <input>
+        <net-file value="../network/intersection.net.xml"/>
+        <route-files value="../demand/routes.rou.xml"/>
+    </input>
+    <time>
+        <begin value="0"/>
+        <end value="3600"/>
+    </time>
+    <output>
+        <tripinfo-output value="../results/baseline_tripinfo.xml"/>
+        <summary-output value="../results/baseline_summary.xml"/>
+    </output>
+</configuration>
