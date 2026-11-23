@@ -1,8 +1,35 @@
+# 1. Bytecode y caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# 2. Entornos virtuales de Python
 venv/
 .venv/
-__pycache__/
-*.pyc
+env/
+ENV/
+
+# 3. Caché de Pytest y reportes temporales de cobertura
 .pytest_cache/
 .coverage
+.coverage.*
 coverage.xml
+htmlcov/
+.tox/
+.nox/
+
+# 4. Logs temporales generados en ejecución del Pipeline / Runtime
 runtime.log
+*.log
+
+# 5. Archivos de configuración local de IDEs / Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 6. Archivos temporales del Sistema Operativo (Windows / macOS / Linux)
+Thumbs.db
+Desktop.ini
+.DS_Store
