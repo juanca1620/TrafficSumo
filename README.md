@@ -72,9 +72,9 @@ traffic_sumo/
 
 ---
 
-## 3. Trazabilidad de las 33 Pruebas Unitarias con el Plan de Pruebas
+## 3. Trazabilidad de las 33 Pruebas Unitarias con el Plan de Pruebas (`docs/Plan_de_Pruebas.pdf`)
 
-Todas las pruebas unitarias especificadas en `docs/Plan_de_Pruebas (1) (2).pdf` y `docs/Plan_de_Pruebas_Unitarias.pdf` están implementadas y pasan al **100 % (`33 passed`)**:
+Todas las pruebas unitarias especificadas en `docs/Plan_de_Pruebas.pdf` están implementadas y pasan al **100 % (`33 passed`)**:
 
 | Formato | Archivo de Prueba | Función / Clase Bajo Prueba | Casos Implementados | Estado |
 | :---: | :--- | :--- | :---: | :---: |

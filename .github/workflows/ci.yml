@@ -20,16 +20,15 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
 
       - name: Instalar dependencias
         run: |
-          if [ -d "traffic_sumo" ]; then cd traffic_sumo; fi
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Ejecutar pruebas unitarias (PU-01 a PU-04) y cobertura
         run: |
-          if [ -d "traffic_sumo" ]; then cd traffic_sumo; fi
           pytest tests/unit/ -v --cov=controller --cov=analysis --cov=tools --cov-report=term-missing --cov-report=xml:coverage.xml
 
       - name: Subir reporte de cobertura como artefacto
@@ -37,9 +36,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: |
-            coverage.xml
-            traffic_sumo/coverage.xml
+          path: coverage.xml
           if-no-files-found: ignore
 
   docker:
@@ -56,12 +53,7 @@ jobs:
 
       - name: Construir imagen Docker
         run: |
-          if [ -d "traffic_sumo" ]; then cd traffic_sumo; fi
           docker build -t traffic-sumo:${{ github.sha }} .
-
-      - name: Ejecutar pruebas unitarias dentro del contenedor Docker
-        run: |
-          docker run --rm traffic-sumo:${{ github.sha }} pytest tests/unit/ -v
 
       - name: Probar ejecución del contenedor (Smoke Test)
         run: |
@@ -71,7 +63,7 @@ jobs:
     name: Desplegar en GHCR y Validar Runtime
     runs-on: ubuntu-latest
     needs: docker
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    if: github.ref == 'refs/heads/main'
     permissions:
       contents: read
       packages: write
@@ -96,11 +88,13 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Construir y publicar imagen en GHCR (docker push)
-        run: |
-          if [ -d "traffic_sumo" ]; then cd traffic_sumo; fi
-          docker build -t ghcr.io/${{ steps.owner.outputs.lc }}/traffic-sumo:latest -t ghcr.io/${{ steps.owner.outputs.lc }}/traffic-sumo:${{ github.sha }} .
-          docker push ghcr.io/${{ steps.owner.outputs.lc }}/traffic-sumo:latest
-          docker push ghcr.io/${{ steps.owner.outputs.lc }}/traffic-sumo:${{ github.sha }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ steps.owner.outputs.lc }}/traffic-sumo:latest
+            ghcr.io/${{ steps.owner.outputs.lc }}/traffic-sumo:${{ github.sha }}
 
       - name: Desplegar contenedor desde el registry (Runtime)
         run: |
