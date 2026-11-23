@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2026-11-22T13:26:50.216859-05:00 by Eclipse SUMO sumo 1.27.1
+<!-- generated on 2026-11-23T15:40:38.955831-05:00 by Eclipse SUMO sumo 1.27.1
 <sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
 
     <input>
-        <net-file value="d:\U\8VOSEMESTRE\Ing 3\traffic_sumo_prototipo\traffic_sumo\scenarios\../network/intersection.net.xml"/>
-        <route-files value="d:\U\8VOSEMESTRE\Ing 3\traffic_sumo_prototipo\traffic_sumo\scenarios\../demand/routes.rou.xml"/>
+        <net-file value="D:\U\8VOSEMESTRE\Ing 3\traffic_sumo_prototipo\traffic_sumo\scenarios\../network/intersection.net.xml"/>
+        <route-files value="D:\U\8VOSEMESTRE\Ing 3\traffic_sumo_prototipo\traffic_sumo\scenarios\../demand/routes.rou.xml"/>
     </input>
 
     <output>
-        <summary-output value="d:\U\8VOSEMESTRE\Ing 3\traffic_sumo_prototipo\traffic_sumo\scenarios\../results/baseline_summary.xml"/>
-        <tripinfo-output value="d:\U\8VOSEMESTRE\Ing 3\traffic_sumo_prototipo\traffic_sumo\scenarios\../results/baseline_tripinfo.xml"/>
+        <summary-output value="D:\U\8VOSEMESTRE\Ing 3\traffic_sumo_prototipo\traffic_sumo\scenarios\../results/baseline_summary.xml"/>
+        <tripinfo-output value="D:\U\8VOSEMESTRE\Ing 3\traffic_sumo_prototipo\traffic_sumo\scenarios\../results/baseline_tripinfo.xml"/>
     </output>
 
     <time>

@@ -66,8 +66,7 @@ traffic_sumo/
 ├── run_tests.py                     # Ejecutor directo de las 33 pruebas unitarias
 ├── run_blackbox_tests.py            # Ejecutor de pruebas de caja negra
 ├── run_pipeline.py                  # Ejecutor local del Pipeline CI/CD completo (3 Jobs / 6 Steps)
-├── COMO_EJECUTAR_LAS_PRUEBAS.md     # Guía detallada de instalación, configuración y evaluación docente
-└── GUION_VIDEO_PIPELINE.md          # Guion paso a paso para el video explicativo del Pipeline
+└── COMO_EJECUTAR_LAS_PRUEBAS.md     # Guía detallada de instalación, configuración y evaluación docente
 ```
 
 ---

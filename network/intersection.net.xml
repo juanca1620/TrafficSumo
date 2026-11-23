@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2026-11-22T13:26:49.997075-05:00 by Eclipse SUMO netconvert 1.27.1
+<!-- generated on 2026-11-23T15:40:38.741898-05:00 by Eclipse SUMO netconvert 1.27.1
 <netconvertConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
-        <node-files value="d:\U\8VOSEMESTRE\Ing 3\traffic_sumo_prototipo\traffic_sumo\network\nodes.nod.xml"/>
-        <edge-files value="d:\U\8VOSEMESTRE\Ing 3\traffic_sumo_prototipo\traffic_sumo\network\edges.edg.xml"/>
+        <node-files value="D:\U\8VOSEMESTRE\Ing 3\traffic_sumo_prototipo\traffic_sumo\network\nodes.nod.xml"/>
+        <edge-files value="D:\U\8VOSEMESTRE\Ing 3\traffic_sumo_prototipo\traffic_sumo\network\edges.edg.xml"/>
     </input>
 
     <output>
-        <output-file value="d:\U\8VOSEMESTRE\Ing 3\traffic_sumo_prototipo\traffic_sumo\network\intersection.net.xml"/>
+        <output-file value="D:\U\8VOSEMESTRE\Ing 3\traffic_sumo_prototipo\traffic_sumo\network\intersection.net.xml"/>
     </output>
 
 </netconvertConfiguration>
