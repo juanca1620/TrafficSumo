@@ -26,7 +26,7 @@ El aplicativo **SGT (Software de Gestión de Tráfico Vehicular con Internet de 
 ## 2. Estructura del Proyecto
 
 ```text
-traffic_sumo/
+TrafficSumo/
 ├── .github/workflows/
 │   └── ci.yml                       # Pipeline CI/CD automatizado en GitHub Actions (3 Jobs, 6 Steps)
 ├── controller/
@@ -89,9 +89,10 @@ Todas las pruebas unitarias especificadas en `docs/Plan_de_Pruebas.pdf` están i
 
 > Para la guía completa de instalación, configuración de parámetros del pipeline y la **prueba de evaluación para el docente (modificación intencional de pruebas unitarias para que fallen)**, consulte **[COMO_EJECUTAR_LAS_PRUEBAS.md](./COMO_EJECUTAR_LAS_PRUEBAS.md)** o el PDF **`docs/Guia_Instalacion_Configuracion_y_Evaluacion_Pipeline.pdf`**.
 
-### Paso 1: Instalar dependencias
+### Paso 1: Clonar el repositorio e instalar dependencias
 ```bash
-cd traffic_sumo
+git clone https://github.com/juanca1620/TrafficSumo.git
+cd TrafficSumo
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```

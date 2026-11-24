@@ -1,120 +1,137 @@
 # GUÍA DETALLADA DE INSTALACIÓN, CONFIGURACIÓN DEL AMBIENTE, PARÁMETROS DEL PIPELINE Y EVALUACIÓN DOCENTE
 
 **Proyecto:** Software de Gestión de Tráfico Vehicular con Internet de las Cosas (SGT) — Prototipo SUMO + TraCI  
+**Repositorio Oficial en GitHub:** https://github.com/juanca1620/TrafficSumo  
 **Institución Universitaria EAM — Facultad de Ingeniería — Ingeniería de Software III**  
 **Docente:** Deivid Octavio Riascos Botero  
 **Integrantes:**
-- Laura Valeria Valencia González (`240220231068`)
-- Luis Miguel Sepúlveda Quintero (`240220231012`)
-- Juan Camilo Soto Soto (`240220231028`)
+- Laura Valeria Valencia González (`240220231068`) — Product Owner / Documentación
+- Luis Miguel Sepúlveda Quintero (`240220231012`) — Desarrollador / Programador
+- Juan Camilo Soto Soto (`240220231028`) — Tester / Analista de Resultados
 
 ---
 
 ## 1. Requisitos e Instalación del Ambiente
 
-Para ejecutar las **33 Pruebas Unitarias (`PU-01` a `PU-04`)** y el **Pipeline CI/CD**, las pruebas unitarias están aisladas mediante `unittest.mock` y archivos XML sintéticos (`tmp_path`), por lo que **no requieren tener instalado el simulador SUMO** en la máquina evaluadora.
+Las **33 Pruebas Unitarias (`PU-01` a `PU-04`)** del proyecto están aisladas mediante `unittest.mock` y archivos XML sintéticos generados en directorios temporales (`tmp_path`), por lo que el docente puede descargar el proyecto y ejecutar la totalidad de las pruebas unitarias y el Pipeline CI/CD sin necesidad de instalar el simulador Eclipse SUMO.
 
-### 1.1. Software Requerido
-1. **Git:** Versión `2.30+` (para clonar el repositorio desde GitHub).
-2. **Python:** Versión `3.10`, `3.11`, `3.12` o superior (con `pip` habilitado).
-3. **Docker Desktop (Opcional pero recomendado):** Para ejecutar los Jobs 2 y 3 del Pipeline dentro de contenedores Linux (`python:3.11-slim`). Si Docker Desktop no está instalado o activo, `run_pipeline.py` ejecuta automáticamente la validación del Smoke Test y Runtime en el entorno local de Python.
-4. **Eclipse SUMO 1.20+ (Opcional):** Únicamente necesario si se desea correr la simulación gráfica `sumo-gui` o las pruebas externas de caja negra (`netconvert`/`sumo`).
+### 1.1. Software Requerido en la Máquina Evaluadora
+1. **Git:** Versión `2.30` o superior.
+2. **Python:** Versión `3.10`, `3.11`, `3.12` o superior (con `pip` incluido).
+3. **Docker Desktop:** Requerido únicamente si se desea construir y ejecutar el contenedor Linux local (`traffic-sumo:local`) en los Jobs 2 y 3. Si Docker Desktop no está abierto, `run_pipeline.py` ejecuta automáticamente el Smoke Test y la validación de Runtime sobre el intérprete local de Python.
+
+---
 
 ### 1.2. Proceso Paso a Paso de Instalación y Configuración del Ambiente
 
-#### Paso 1: Descargar o clonar el repositorio
-```bash
-git clone <URL_DEL_REPOSITORIO_GITHUB>
-cd traffic_sumo_prototipo/traffic_sumo
-```
-*(Nota: Si el repositorio se clonó directamente sobre la carpeta `traffic_sumo`, basta con `cd traffic_sumo`).*
+Ejecute los siguientes comandos en orden dentro de su terminal:
 
-#### Paso 2: Crear y activar un entorno virtual limpio (Recomendado)
-En **Windows (PowerShell):**
-```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-```
-En **Windows (CMD):**
-```cmd
-python -m venv venv
-venv\Scripts\activate.bat
-```
-En **Linux / macOS:**
+#### Paso 1: Clonar el repositorio oficial desde GitHub e ingresar al directorio del proyecto
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+git clone https://github.com/juanca1620/TrafficSumo.git
+cd TrafficSumo
 ```
 
-#### Paso 3: Instalar las dependencias del proyecto
+#### Paso 2: Crear y activar el entorno virtual de Python
+- **En Windows (PowerShell):**
+  ```powershell
+  python -m venv venv
+  .\venv\Scripts\Activate.ps1
+  ```
+- **En Windows (CMD):**
+  ```cmd
+  python -m venv venv
+  venv\Scripts\activate.bat
+  ```
+- **En Linux / macOS:**
+  ```bash
+  python3 -m venv venv
+  source venv/bin/activate
+  ```
+
+#### Paso 3: Actualizar `pip` e instalar las dependencias desde `requirements.txt`
 ```bash
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
-Esto instalará los paquetes exactos definidos en `requirements.txt`:
-- `pytest>=8.0` (motor de ejecución de pruebas unitarias)
-- `pytest-cov>=5.0` (cálculo de cobertura de código y exportación a `coverage.xml`)
-- `matplotlib>=3.8.0` (generación de la gráfica comparativa `comparacion.png` evaluada en `PU-03 CP9`)
-- `traci>=1.20.0` (interfaz Python de comunicación con SUMO sustituida con `unittest.mock` en `PU-01`)
+Este comando instala las 4 dependencias exactas declaradas en [`requirements.txt`](./requirements.txt):
+- `pytest>=8.0` — Framework de ejecución de las 33 pruebas unitarias.
+- `pytest-cov>=5.0` — Motor de cobertura de código y generación del reporte `coverage.xml`.
+- `matplotlib>=3.8.0` — Librería de generación de la gráfica comparativa `results/comparacion.png` (`PU-03 CP9`).
+- `traci>=1.20.0` — Librería cliente de comunicación con SUMO reemplazada mediante `unittest.mock.patch` en `PU-01`.
 
 ---
 
 ## 2. Configuración de los Parámetros del Pipeline CI/CD
 
-El Pipeline está implementado en dos modalidades equivalentes que reflejan exactamente el mismo flujo de 3 trabajos (**Jobs**) y 6 pasos (**Steps**):
-1. **En la nube (GitHub Actions):** Archivo [`.github/workflows/ci.yml`](./.github/workflows/ci.yml).
-2. **En entorno local (CLI / Docker Desktop):** Script [`run_pipeline.py`](./run_pipeline.py) y [`Dockerfile`](./Dockerfile).
+El Pipeline CI/CD se encuentra configurado en el archivo [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) para ejecución en **GitHub Actions** y cuenta con su espejo exacto en el script [`run_pipeline.py`](./run_pipeline.py) para ejecución en la máquina local del docente.
 
-### 2.1. Parámetros Configurables en `.github/workflows/ci.yml`
+### 2.1. Tabla Detallada de Parámetros en `.github/workflows/ci.yml`
 
-| Parámetro / Clave | Ubicación en `ci.yml` | Valor Configurado | Descripción y Propósito |
+| Parámetro / Clave | Ubicación en `.github/workflows/ci.yml` | Valor Exacto Configurado | Función dentro del Pipeline |
 | :--- | :--- | :--- | :--- |
-| **Disparadores (`on`)** | Líneas 3–8 | `push`, `pull_request` (todas las ramas `"**"`) y `workflow_dispatch` | Ejecuta el pipeline automáticamente al subir cualquier commit o manualmente desde el botón **"Run workflow"** en GitHub. |
-| **Sistema Operativo (`runs-on`)** | Líneas 13, 46, 70 | `ubuntu-latest` | Ambiente Linux limpio aprovisionado por GitHub Actions para cada Job. |
-| **Versión de Python (`python-version`)** | Línea 22 | `"3.11"` | Versión de Python utilizada tanto en el runner de GitHub Actions como en la imagen base `python:3.11-slim` del `Dockerfile`. |
-| **Parámetros de `pytest` y Cobertura** | Línea 33 | `pytest tests/unit/ -v --cov=controller --cov=analysis --cov=tools --cov-report=term-missing --cov-report=xml:coverage.xml` | Ejecuta las 33 pruebas unitarias (`PU-01` a `PU-04`), mide cobertura sobre los 3 paquetes del aplicativo y exporta el artefacto `coverage.xml`. |
-| **Encadenamiento de Jobs (`needs`)** | Líneas 47 y 71 | `needs: test` (en Job 2) y `needs: docker` (en Job 3) | **Bloqueo de seguridad (Quality Gate):** Si al menos 1 de las 33 pruebas unitarias falla en el Job 1 (`test`), el Job 2 (`docker`) y el Job 3 (`deploy`) se cancelan automáticamente. |
-| **Permisos de Registro (`permissions`)** | Líneas 73–75 | `contents: read`, `packages: write` | Autoriza al `GITHUB_TOKEN` automático del repositorio a publicar la imagen Docker en `ghcr.io/<usuario>/traffic-sumo:latest`. |
-| **Validación de Runtime (Health-Check)** | Línea 111 | `grep -q "SGT listo: EXTENDER True" runtime.log` | Verifica que el contenedor desplegado importe los módulos y responda con la decisión esperada antes de aprobar el despliegue. |
-
-### 2.2. Parámetros Configurables en `pytest.ini` y `Dockerfile`
-- **`pytest.ini`:**
-  ```ini
-  [pytest]
-  testpaths = tests/unit
-  pythonpath = .
-  addopts = -v
-  ```
-  Permite que al ejecutar simplemente `pytest` en la raíz de `traffic_sumo/`, se descubran y ejecuten de forma automática las 33 pruebas unitarias de `tests/unit/` en modo detallado (`-v`).
-- **`Dockerfile`:**
-  Empaqueta el código fuente (`controller/`, `analysis/`, `tools/`, `network/`, `demand/`, `scenarios/`) y la suite `tests/` sobre `python:3.11-slim`, definiendo como `CMD` el comando de validación de estado (`SGT listo: EXTENDER True`).
+| **`name`** | Línea 1 | `CI Pipeline - SGT Traffic SUMO` | Identificador del flujo de trabajo en la pestaña **Actions** de GitHub. |
+| **`on` (Disparadores)** | Líneas 3–8 | `push: branches: [ "**" ]`, `pull_request: branches: [ "**" ]`, `workflow_dispatch:` | Dispara el pipeline automáticamente ante cualquier `push` o `pull_request` en cualquier rama, o manualmente mediante el botón **Run workflow**. |
+| **`runs-on`** | Líneas 13, 44, 64 | `ubuntu-latest` | Máquina virtual Linux aprovisionada en limpio para cada uno de los 3 Jobs (`test`, `docker`, `deploy`). |
+| **`python-version` y `cache`** | Líneas 20–23 | `python-version: "3.11"`, `cache: "pip"` | Configura Python 3.11 mediante `actions/setup-python@v5` y almacena en caché los paquetes de `pip`. |
+| **Comando de Pruebas Unitarias y Cobertura (Job 1 `test`)** | Línea 32 | `pytest tests/unit/ -v --cov=controller --cov=analysis --cov=tools --cov-report=term-missing --cov-report=xml:coverage.xml` | Ejecuta las 33 pruebas unitarias (`PU-01` a `PU-04`), muestra en consola las líneas cubiertas de los 3 módulos del aplicativo y genera `coverage.xml`. |
+| **Artefacto de Cobertura** | Líneas 34–40 | `name: coverage-report`, `path: coverage.xml` | Sube el reporte XML de cobertura con `actions/upload-artifact@v4` (`if: always()`). |
+| **Bloqueo entre Jobs (`needs`)** | Líneas 45 y 65 | `needs: test` (en Job `docker`) y `needs: docker` (en Job `deploy`) | **Quality Gate:** Si al menos 1 de las 33 pruebas unitarias falla en el Job 1 (`test`), GitHub Actions cancela automáticamente la construcción de Docker (Job 2) y el despliegue (Job 3). |
+| **Construcción y Smoke Test de Contenedor (Job 2 `docker`)** | Líneas 56 y 60 | `docker build -t traffic-sumo:${{ github.sha }} .` y `docker run --rm traffic-sumo:${{ github.sha }}` | Construye la imagen Docker con el commit actual y verifica que el contenedor inicie y valide los módulos sin errores. |
+| **Condición y Permisos de Despliegue (Job 3 `deploy`)** | Líneas 66–69 | `if: github.ref == 'refs/heads/main'`, `contents: read`, `packages: write` | Autoriza al `GITHUB_TOKEN` a publicar paquetes en GitHub Container Registry (`ghcr.io`) desde la rama `main`. |
+| **Imágenes Publicadas en GHCR** | Líneas 96–97 | `ghcr.io/juanca1620/traffic-sumo:latest` y `ghcr.io/juanca1620/traffic-sumo:${{ github.sha }}` | Etiquetas publicadas en el registro de contenedores mediante `docker/build-push-action@v6`. |
+| **Validación en Runtime (Health-Check)** | Líneas 101–106 | `docker run --rm ghcr.io/juanca1620/traffic-sumo:latest \| tee runtime.log` y `grep -q "SGT listo: EXTENDER True" runtime.log` | Descarga la imagen publicada, captura su salida estándar en `runtime.log` y comprueba la respuesta exacta `"SGT listo: EXTENDER True"`. |
 
 ---
 
-## 3. Ejecución Normal del Pipeline (100 % Exitoso — 33/33 Pruebas Unitarias PASSED)
+### 2.2. Parámetros Configurados en `pytest.ini` y `Dockerfile`
 
-Ubicado en la carpeta `traffic_sumo/`:
+1. **Archivo [`pytest.ini`](./pytest.ini):**
+   ```ini
+   [pytest]
+   testpaths = tests/unit
+   pythonpath = .
+   addopts = -v
+   ```
+   - `testpaths = tests/unit`: Define la ruta por defecto donde `pytest` descubre los 4 archivos de pruebas unitarias (`test_sensores.py`, `test_decision.py`, `test_analisis.py`, `test_validadores.py`).
+   - `pythonpath = .`: Garantiza que los paquetes `controller`, `analysis` y `tools` se importen directamente desde la raíz del proyecto.
+   - `addopts = -v`: Activa la salida detallada con el nombre e indicador `PASSED` / `FAILED` de cada uno de los 33 casos de prueba.
 
-### Opción A: Ejecutar el Pipeline CI/CD Completo Localmente
+2. **Archivo [`Dockerfile`](./Dockerfile):**
+   - Imagen base: `FROM python:3.11-slim`.
+   - Directorio de trabajo: `WORKDIR /app`.
+   - Instala `requirements.txt` y copia las carpetas `controller/`, `analysis/`, `tools/`, `network/`, `demand/`, `scenarios/` y `tests/`.
+   - Comando de inicio (`CMD`): Verifica la red vial (`validar_red`), la demanda vehicular (`validar_demanda`), el cálculo de mejora (`calcular_mejora`), la decisión semafórica (`decidir_accion(15, 0, True)`) y la validación de parámetros (`validar_parametros(10, 45, 3)`), imprimiendo `SGT listo: EXTENDER True`.
+
+---
+
+## 3. Ejecución Normal del Pipeline (Estado Exitoso: 33/33 Pruebas Unitarias PASSED)
+
+Ubicado en la raíz del repositorio clonado (`TrafficSumo/`), puede ejecutar el Pipeline y las pruebas mediante cualquiera de los siguientes comandos:
+
+### 3.1. Ejecutar el Pipeline CI/CD Completo Localmente (3 Jobs · 6 Steps)
 ```bash
 python run_pipeline.py
 ```
-**Flujo que observará en consola:**
-1. **`[JOB 1: test · STEP 1/6]`:** Verifica la versión de Python y rutas del entorno.
-2. **`[JOB 1: test · STEP 2/6]`:** Ejecuta `pytest tests/unit/ -v --cov=controller --cov=analysis --cov=tools`. Las **33 pruebas unitarias (`PU-01` a `PU-04`)** pasan en verde (`33 passed`) y se genera `coverage.xml`.
-3. **`[JOB 2: docker · STEP 3/6]`:** Construye la imagen `traffic-sumo:local` con Docker Desktop y ejecuta las 33 pruebas unitarias dentro del contenedor Linux.
-4. **`[JOB 2: docker · STEP 4/6]`:** Ejecuta el Smoke Test del contenedor (`SGT listo: EXTENDER True`).
-5. **`[JOB 3: deploy · STEP 5/6]`:** Despliega la ejecución y guarda la salida en `runtime.log`.
-6. **`[JOB 3: deploy · STEP 6/6]`:** Verifica la cadena `"SGT listo: EXTENDER True"` en `runtime.log` y finaliza con:
-   `RESULTADO FINAL DEL PIPELINE CI/CD: SUCCESS (3/3 JOBS · 6/6 STEPS EN VERDE)`.
+**Resultado obtenido en consola:**
+- **`[JOB 1: test · STEP 1/6]`:** Verifica el ejecutable de Python y el directorio raíz.
+- **`[JOB 1: test · STEP 2/6]`:** Ejecuta las **33 Pruebas Unitarias (`PU-01` a `PU-04`)** con resultado **`33 passed`** y genera el archivo `coverage.xml`.
+- **`[JOB 2: docker · STEP 3/6]`:** Construye la imagen `traffic-sumo:local` y ejecuta las 33 pruebas unitarias dentro del contenedor.
+- **`[JOB 2: docker · STEP 4/6]`:** Ejecuta el Smoke Test obteniendo `Salida obtenida en Smoke Test: SGT listo: EXTENDER True`.
+- **`[JOB 3: deploy · STEP 5/6]`:** Despliega la ejecución y escribe el archivo `runtime.log`.
+- **`[JOB 3: deploy · STEP 6/6]`:** Verifica la existencia de `"SGT listo: EXTENDER True"` en `runtime.log` e imprime:
+  `RESULTADO FINAL DEL PIPELINE CI/CD: SUCCESS (3/3 JOBS · 6/6 STEPS EN VERDE)`.
 
-### Opción B: Ejecutar únicamente las 33 Pruebas Unitarias
+### 3.2. Ejecutar Únicamente la Suite de 33 Pruebas Unitarias
 ```bash
 pytest tests/unit/ -v
 ```
-*(O bien `python run_tests.py`).*
+O mediante el script con resumen de calidad:
+```bash
+python run_tests.py
+```
 
-### Opción C: Ejecutar manualmente los pasos con Docker Desktop
+### 3.3. Ejecutar las Pruebas Unitarias y el Smoke Test con Docker Desktop
 ```bash
 docker build -t traffic-sumo:local .
 docker run --rm traffic-sumo:local pytest tests/unit/ -v
@@ -123,90 +140,134 @@ docker run --rm traffic-sumo:local
 
 ---
 
-## 4. Guía para la Evaluación del Docente: Modificación Intencional de Pruebas Unitarias para Provocar el Fallo del Pipeline
+## 4. Guía Paso a Paso para la Evaluación del Docente: Modificación Intencional de Pruebas Unitarias para Provocar el Fallo del Pipeline
 
-Conforme a lo indicado en la guía de la actividad:
-> *"Para la evaluación el docente descargará el proyecto del repositorio y siguiendo los pasos de la guía entregada, procederá a ejecutar el pipeline e intencionalmente realizará modificaciones en las Pruebas Unitarias para que estas fallen durante la ejecución."*
-
-A continuación se presentan **4 pruebas de fallo intencional** (una por cada formato `PU-01`, `PU-02`, `PU-03` y `PU-04`) que el docente puede aplicar para comprobar cómo el Pipeline detecta inmediatamente la falla, reporta la línea exacta del error y **bloquea los Jobs siguientes (`docker` y `deploy`)**.
+Para verificar el cumplimiento del criterio de rechazo del Plan de Pruebas (*"al menos un caso falla porque el resultado obtenido difiere del esperado"*) y comprobar cómo el Pipeline detiene la ejecución, el docente puede realizar cualquiera de las siguientes **4 modificaciones intencionales** (una por cada formato `PU-01`, `PU-02`, `PU-03` y `PU-04`):
 
 ---
 
-### Caso de Fallo Intencional 1 — Módulo `PU-01` (Sensores IoT: `tests/unit/test_sensores.py`)
+### Prueba de Fallo Intencional 1 — Formato `PU-01` (`tests/unit/test_sensores.py`)
 
-1. Abra el archivo [`tests/unit/test_sensores.py`](./tests/unit/test_sensores.py).
-2. Ubique la prueba `test_pu01_cp1_vehiculos_ambos_ejes` (línea 53):
+1. **Archivo a editar:** [`tests/unit/test_sensores.py`](./tests/unit/test_sensores.py)
+2. **Función y línea exacta:** `test_pu01_cp1_vehiculos_ambos_ejes` (**Línea 53**).
+3. **Código original (Pasa):**
    ```python
-   # Valor original correcto (3 + 2 = 5 en NS; 1 + 0 = 1 en EW):
    assert resultado == {"NS": 5, "EW": 1}, f"Se esperaba {{'NS': 5, 'EW': 1}}, obtenido {resultado}"
    ```
-3. **Modifíquelo intencionalmente** cambiando `"NS": 5` por `"NS": 99`:
+4. **Modificación intencional para provocar el fallo (cambiar `5` por `99`):**
    ```python
    assert resultado == {"NS": 99, "EW": 1}, f"Se esperaba {{'NS': 99, 'EW': 1}}, obtenido {resultado}"
    ```
-4. Ejecute el Pipeline:
+5. **Comando a ejecutar para probar el fallo en el Pipeline:**
    ```bash
    python run_pipeline.py
    ```
-   *(O si lo sube a GitHub con `git commit -am "Prueba fallo PU-01" && git push`, obsérvelo en la pestaña **Actions**).*
-5. **Resultado esperado durante el fallo:**
-   - `pytest` marca `FAILED tests/unit/test_sensores.py::test_pu01_cp1_vehiculos_ambos_ejes` (`1 failed, 32 passed`).
-   - El Pipeline imprime:
-     `[PIPELINE DETENIDO - CRITERIO DE RECHAZO ACTIVADO]` y **NO construye la imagen Docker (Job 2) ni ejecuta el despliegue (Job 3)**.
-6. **Restaurar:** Vuelva a colocar `"NS": 5` y ejecute `python run_pipeline.py` para verificar que vuelve a `33 passed`.
+6. **Resultado exacto que observará en consola:**
+   - `pytest` reporta:
+     `FAILED tests/unit/test_sensores.py::test_pu01_cp1_vehiculos_ambos_ejes`
+     `AssertionError: Se esperaba {'NS': 99, 'EW': 1}, obtenido {'NS': 5, 'EW': 1}`
+     `========================= 1 failed, 32 passed =========================`
+   - El Pipeline se detiene inmediatamente en el **Job 1 (`STEP 2/6`)** con código de salida `1`, mostrando:
+     `[PIPELINE DETENIDO - CRITERIO DE RECHAZO ACTIVADO]` y **abortando el Job 2 (`docker`) y el Job 3 (`deploy`)**.
+7. **Restauración a estado exitoso:**
+   Regrese la **Línea 53** de `tests/unit/test_sensores.py` a:
+   ```python
+   assert resultado == {"NS": 5, "EW": 1}, f"Se esperaba {{'NS': 5, 'EW': 1}}, obtenido {resultado}"
+   ```
+   y ejecute `python run_pipeline.py` para confirmar que las 33 pruebas vuelven a pasar (`33 passed`).
 
 ---
 
-### Caso de Fallo Intencional 2 — Módulo `PU-02` (Decisión Semafórica: `tests/unit/test_decision.py`)
+### Prueba de Fallo Intencional 2 — Formato `PU-02` (`tests/unit/test_decision.py`)
 
-1. Abra el archivo [`tests/unit/test_decision.py`](./tests/unit/test_decision.py).
-2. Ubique la prueba `test_pu02_cp1_limite_inferior_no_cortar_antes_minimo` (líneas 34–35):
+1. **Archivo a editar:** [`tests/unit/test_decision.py`](./tests/unit/test_decision.py)
+2. **Función y línea exacta:** `test_pu02_cp1_limite_inferior_no_cortar_antes_minimo` (**Línea 35**).
+3. **Código original (Pasa):**
    ```python
-   # Original: Con t_verde=9s (< 10s mínimo), el semáforo NUNCA debe cortar el verde:
    accion = decidir_accion(t_verde=9, seg_sin_deteccion=5, hay_demanda_opuesta=True)
    assert accion == "EXTENDER"
    ```
-3. **Modifíquelo intencionalmente** cambiando `"EXTENDER"` por `"CAMBIAR"`:
+4. **Modificación intencional para provocar el fallo (cambiar `"EXTENDER"` por `"CAMBIAR"`):**
    ```python
+   accion = decidir_accion(t_verde=9, seg_sin_deteccion=5, hay_demanda_opuesta=True)
    assert accion == "CAMBIAR"
    ```
-4. Ejecute el Pipeline:
+5. **Comando a ejecutar para probar el fallo en el Pipeline:**
    ```bash
    python run_pipeline.py
    ```
-5. **Resultado esperado:** El Job 1 falla con `AssertionError: assert 'EXTENDER' == 'CAMBIAR'` y detiene el Pipeline en el Paso 2/6.
-6. **Restaurar:** Vuelva a colocar `assert accion == "EXTENDER"`.
+6. **Resultado exacto que observará en consola:**
+   - `pytest` reporta:
+     `FAILED tests/unit/test_decision.py::test_pu02_cp1_limite_inferior_no_cortar_antes_minimo`
+     `AssertionError: assert 'EXTENDER' == 'CAMBIAR'`
+     `========================= 1 failed, 32 passed =========================`
+   - El Pipeline aborta en el **Job 1 (`STEP 2/6`)** sin ejecutar Docker ni Deploy.
+7. **Restauración a estado exitoso:**
+   Regrese la **Línea 35** de `tests/unit/test_decision.py` a:
+   ```python
+   assert accion == "EXTENDER"
+   ```
 
 ---
 
-### Caso de Fallo Intencional 3 — Módulo `PU-03` (Análisis de Resultados: `tests/unit/test_analisis.py`)
+### Prueba de Fallo Intencional 3 — Formato `PU-03` (`tests/unit/test_analisis.py`)
 
-1. Abra el archivo [`tests/unit/test_analisis.py`](./tests/unit/test_analisis.py).
-2. Ubique la prueba `test_pu03_cp5_porcentaje_mejora_espera` (líneas 86–87):
+1. **Archivo a editar:** [`tests/unit/test_analisis.py`](./tests/unit/test_analisis.py)
+2. **Función y línea exacta:** `test_pu03_cp5_porcentaje_mejora_espera` (**Línea 92**).
+3. **Código original (Pasa):**
    ```python
-   # Original: De 100.0 s a 49.2 s la mejora es del 50.8 %
    mejora = calcular_mejora(base=100.0, adaptativo=49.2)
    assert mejora == pytest.approx(50.8, 0.1)
    ```
-3. **Modifíquelo intencionalmente** cambiando `50.8` por `80.0`:
+4. **Modificación intencional para provocar el fallo (cambiar `50.8` por `80.0`):**
    ```python
+   mejora = calcular_mejora(base=100.0, adaptativo=49.2)
    assert mejora == pytest.approx(80.0, 0.1)
    ```
-4. Ejecute `python run_pipeline.py` y verifique que el Pipeline se detiene reportando `1 failed, 32 passed`. Luego restaure `50.8`.
+5. **Comando a ejecutar para probar el fallo en el Pipeline:**
+   ```bash
+   python run_pipeline.py
+   ```
+6. **Resultado exacto que observará en consola:**
+   - `pytest` reporta:
+     `FAILED tests/unit/test_analisis.py::test_pu03_cp5_porcentaje_mejora_espera`
+     `AssertionError: assert 50.8 == 80.0 ± 8.0e+00`
+     `========================= 1 failed, 32 passed =========================`
+   - El Pipeline aborta en el **Job 1 (`STEP 2/6`)** sin ejecutar Docker ni Deploy.
+7. **Restauración a estado exitoso:**
+   Regrese la **Línea 92** de `tests/unit/test_analisis.py` a:
+   ```python
+   assert mejora == pytest.approx(50.8, 0.1)
+   ```
 
 ---
 
-### Caso de Fallo Intencional 4 — Módulo `PU-04` (Validadores de Configuración: `tests/unit/test_validadores.py`)
+### Prueba de Fallo Intencional 4 — Formato `PU-04` (`tests/unit/test_validadores.py`)
 
-1. Abra el archivo [`tests/unit/test_validadores.py`](./tests/unit/test_validadores.py).
-2. Ubique la prueba `test_pu04_cp2_limite_acceso_con_un_carril` (líneas 71–72):
+1. **Archivo a editar:** [`tests/unit/test_validadores.py`](./tests/unit/test_validadores.py)
+2. **Función y línea exacta:** `test_pu04_cp2_limite_acceso_con_un_carril` (**Línea 72**).
+3. **Código original (Pasa):**
    ```python
-   # Original: Una red con un acceso de solo 1 carril debe ser rechazada (es_valido is False)
    es_valido, mensaje = validar_red(str(net_file))
    assert es_valido is False
    ```
-3. **Modifíquelo intencionalmente** cambiando `False` por `True`:
+4. **Modificación intencional para provocar el fallo (cambiar `False` por `True`):**
    ```python
+   es_valido, mensaje = validar_red(str(net_file))
    assert es_valido is True
    ```
-4. Ejecute `python run_pipeline.py`, observe la detención automática del Pipeline por fallo en `PU-04 CP2`, y restaure `assert es_valido is False`.
+5. **Comando a ejecutar para probar el fallo en el Pipeline:**
+   ```bash
+   python run_pipeline.py
+   ```
+6. **Resultado exacto que observará en consola:**
+   - `pytest` reporta:
+     `FAILED tests/unit/test_validadores.py::test_pu04_cp2_limite_acceso_con_un_carril`
+     `AssertionError: assert False is True`
+     `========================= 1 failed, 32 passed =========================`
+   - El Pipeline aborta en el **Job 1 (`STEP 2/6`)** sin ejecutar Docker ni Deploy.
+7. **Restauración a estado exitoso:**
+   Regrese la **Línea 72** de `tests/unit/test_validadores.py` a:
+   ```python
+   assert es_valido is False
+   ```
